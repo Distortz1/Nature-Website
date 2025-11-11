@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>City Racer 2D</title>
+  <meta name="description" content="A simple 2D car racing game with a scrolling city background. Use arrow keys or touch controls.">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <!-- Start Screen -->
+  <section id="start-screen" class="screen is-active" aria-labelledby="game-title">
+    <div class="panel">
+      <h1 id="game-title">City Racer 2D</h1>
+      <p class="tagline">Use Arrow Keys or on-screen controls to steer. Accelerate and brake to manage speed. Avoid traffic!</p>
+      <ul class="instructions">
+        <li><strong>Left/Right:</strong> Steer</li>
+        <li><strong>Up:</strong> Accelerate</li>
+        <li><strong>Down:</strong> Brake</li>
+        <li><strong>Goal:</strong> Travel as far as possible without crashing</li>
+      </ul>
+      <button id="btn-start" class="btn">Start Game</button>
+    </div>
+  </section>
+
+  <!-- Game Screen -->
+  <section id="game-screen" class="screen" aria-label="Game canvas">
+    <div class="hud">
+      <div class="hud-item">Speed: <span id="hud-speed">0</span> km/h</div>
+      <div class="hud-item">Score: <span id="hud-score">0</span></div>
+      <div class="hud-item">Best: <span id="hud-best">0</span></div>
+    </div>
+    <!-- Canvas draws the city, road, player, obstacles -->
+    <canvas id="game" width="480" height="800" aria-label="Racing game canvas"></canvas>
+    <!-- Mobile touch controls -->
+    <div class="touch-controls" aria-hidden="false">
+      <button id="btn-left" class="touch-btn" aria-label="Move left">◀</button>
+      <div class="touch-vertical">
+        <button id="btn-accel" class="touch-btn" aria-label="Accelerate">▲</button>
+        <button id="btn-brake" class="touch-btn" aria-label="Brake">▼</button>
+      </div>
+      <button id="btn-right" class="touch-btn" aria-label="Move right">▶</button>
+    </div>
+  </section>
+
+  <!-- Game Over Screen -->
+  <section id="gameover-screen" class="screen" aria-labelledby="over-title">
+    <div class="panel">
+      <h2 id="over-title">Game Over</h2>
+      <p>Your Score: <span id="final-score">0</span></p>
+      <p>Best Score: <span id="best-score">0</span></p>
+      <div class="actions">
+        <button id="btn-restart" class="btn">Restart Game</button>
+        <button id="btn-home" class="btn ghost">Back to Home</button>
+      </div>
+      <p class="small">Tip: Smooth steering and speed control help avoid traffic safely.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> City Racer 2D. Built with HTML, CSS, and JavaScript.</p>
+  </footer>
+
+  <script>
+    // Footer year for static HTML
+    document.addEventListener('DOMContentLoaded', function(){ 
+      var y = document.getElementById('year'); 
+      if(y){ y.textContent = new Date().getFullYear(); }
+    });
+  </script>
+  <script src="assets/js/game.js"></script>
+</body>
+</html>
+
+
