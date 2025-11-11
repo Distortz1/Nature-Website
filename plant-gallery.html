@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Gallery - Explore Different Plants</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            max-width: 500px;
+            margin: 30px auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #667eea;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #667eea;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .plants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .plant-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .plant-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .plant-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+        }
+
+        .plant-info {
+            padding: 20px;
+        }
+
+        .plant-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .plant-category {
+            display: inline-block;
+            padding: 5px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .plant-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+        }
+
+        .modal-content {
+            position: relative;
+            margin: 50px auto;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 35px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #667eea;
+        }
+
+        .modal-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-name {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal-category {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .modal-description {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .no-results {
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            padding: 40px;
+            display: none;
+        }
+
+        .no-results.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .plants-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌿 Plant Gallery</h1>
+            <p class="subtitle">Explore different kinds of beautiful plants</p>
+        </header>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search for plants...">
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-category="all">All Plants</button>
+            <button class="filter-btn" data-category="flowering">Flowering</button>
+            <button class="filter-btn" data-category="succulent">Succulent</button>
+            <button class="filter-btn" data-category="tree">Tree</button>
+            <button class="filter-btn" data-category="herb">Herb</button>
+            <button class="filter-btn" data-category="fern">Fern</button>
+            <button class="filter-btn" data-category="fruit">Fruit</button>
+        </div>
+
+        <div class="plants-grid" id="plantsGrid"></div>
+        <div class="no-results" id="noResults">No plants found matching your search.</div>
+    </div>
+
+    <div id="plantModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img class="modal-image" id="modalImage" src="" alt="">
+            <h2 class="modal-name" id="modalName"></h2>
+            <span class="modal-category" id="modalCategory"></span>
+            <p class="modal-description" id="modalDescription"></p>
+        </div>
+    </div>
+
+    <script>
+        const plants = [
+            {
+                name: "Rose",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1518621012428-4ae236c35dc8?w=600&h=600&fit=crop",
+                description: "Roses are one of the most popular flowering plants, known for their beauty and fragrance. They come in many colors and are often used in gardens and as cut flowers."
+            },
+            {
+                name: "Aloe Vera",
+                category: "succulent",
+                image: "https://images.unsplash.com/photo-1587049633312-d628ae50a8ae?w=600&h=600&fit=crop",
+                description: "Aloe Vera is a succulent plant species that is widely used for medicinal purposes. It has thick, fleshy leaves filled with gel that has soothing properties."
+            },
+            {
+                name: "Oak Tree",
+                category: "tree",
+                image: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=600&h=600&fit=crop",
+                description: "Oak trees are large, majestic trees known for their strength and longevity. They produce acorns and are important for forest ecosystems."
+            },
+            {
+                name: "Basil",
+                category: "herb",
+                image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=600&h=600&fit=crop",
+                description: "Basil is a popular culinary herb with a sweet, aromatic flavor. It's commonly used in cooking, especially in Italian and Mediterranean cuisines."
+            },
+            {
+                name: "Boston Fern",
+                category: "fern",
+                image: "https://images.unsplash.com/photo-1597848212624-e59336e7b757?w=600&h=600&fit=crop",
+                description: "Boston Ferns are elegant houseplants with delicate, arching fronds. They thrive in humid environments and add a touch of nature to indoor spaces."
+            },
+            {
+                name: "Lavender",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1499002238440-d264edd596ec?w=600&h=600&fit=crop",
+                description: "Lavender is a fragrant flowering plant known for its calming scent and beautiful purple flowers. It's used in aromatherapy and as a decorative plant."
+            },
+            {
+                name: "Sunflower",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1597848212624-e59336e7b757?w=600&h=600&fit=crop",
+                description: "Sunflowers are tall, bright flowers that follow the sun throughout the day. They produce edible seeds and are a symbol of happiness and positivity."
+            },
+            {
+                name: "Snake Plant",
+                category: "succulent",
+                image: "https://images.unsplash.com/photo-1515942405150-72a7c3a5d32b?w=600&h=600&fit=crop",
+                description: "Snake Plants are hardy succulents with upright, sword-like leaves. They're excellent air purifiers and very easy to care for, making them perfect for beginners."
+            },
+            {
+                name: "Apple Tree",
+                category: "fruit",
+                image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&h=600&fit=crop",
+                description: "Apple trees produce delicious fruits and beautiful spring blossoms. They require proper care but reward growers with fresh, homegrown apples."
+            },
+            {
+                name: "Mint",
+                category: "herb",
+                image: "https://images.unsplash.com/photo-1587775176440-c373b4b31e9e?w=600&h=600&fit=crop",
+                description: "Mint is a refreshing, aromatic herb that's easy to grow and spreads quickly. It's commonly used in teas, desserts, and as a garnish."
+            },
+            {
+                name: "Maple Tree",
+                category: "tree",
+                image: "https://images.unsplash.com/photo-1470058869958-2a77ade41c02?w=600&h=600&fit=crop",
+                description: "Maple trees are famous for their brilliant fall foliage. They produce maple syrup and are valued for their beautiful, distinctive leaves."
+            },
+            {
+                name: "Jade Plant",
+                category: "succulent",
+                image: "https://images.unsplash.com/photo-1594069033323-74aa7ec3d5e0?w=600&h=600&fit=crop",
+                description: "Jade Plants are popular succulent houseplants with thick, glossy leaves. They're considered symbols of good luck and are very low-maintenance."
+            },
+            {
+                name: "Tulip",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1520763185298-1b434c919851?w=600&h=600&fit=crop",
+                description: "Tulips are spring-blooming flowers that come in a wide variety of colors. They're popular garden flowers and are associated with perfect love."
+            },
+            {
+                name: "Rosemary",
+                category: "herb",
+                image: "https://images.unsplash.com/photo-1618617794477-0598e3cc85a1?w=600&h=600&fit=crop",
+                description: "Rosemary is an aromatic evergreen herb with needle-like leaves. It's used extensively in cooking and has a distinctive, pine-like fragrance."
+            },
+            {
+                name: "Lemon Tree",
+                category: "fruit",
+                image: "https://images.unsplash.com/photo-1587387119725-9d6bac0f22c0?w=600&h=600&fit=crop",
+                description: "Lemon trees produce fragrant blossoms and tart, yellow fruits. They can be grown in containers and add a fresh, citrusy element to gardens."
+            },
+            {
+                name: "Maidenhair Fern",
+                category: "fern",
+                image: "https://images.unsplash.com/photo-1490750967868-88c2e36ad2bd?w=600&h=600&fit=crop",
+                description: "Maidenhair Ferns are delicate, lacy ferns with thin, black stems. They require high humidity and indirect light, making them perfect for bathrooms."
+            },
+            {
+                name: "Echeveria",
+                category: "succulent",
+                image: "https://images.unsplash.com/photo-1614594975525-e45190c55c41?w=600&h=600&fit=crop",
+                description: "Echeveria are rosette-forming succulents with beautiful, colorful leaves. They're drought-tolerant and perfect for rock gardens or containers."
+            },
+            {
+                name: "Orchid",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=600&fit=crop",
+                description: "Orchids are exotic flowering plants with stunning, intricate blooms. They require specific care but reward growers with long-lasting, beautiful flowers."
+            },
+            {
+                name: "Pine Tree",
+                category: "tree",
+                image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=600&fit=crop",
+                description: "Pine trees are evergreen conifers with needle-like leaves and distinctive cones. They're important for forestry and provide year-round greenery."
+            },
+            {
+                name: "Strawberry",
+                category: "fruit",
+                image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=600&h=600&fit=crop",
+                description: "Strawberry plants produce sweet, red fruits and white flowers. They're great for gardens and can be grown in containers or garden beds."
+            },
+            {
+                name: "Thyme",
+                category: "herb",
+                image: "https://images.unsplash.com/photo-1618219908416-31cb52bcafa1?w=600&h=600&fit=crop",
+                description: "Thyme is a small, aromatic herb with tiny leaves. It's commonly used in cooking and adds a savory, earthy flavor to dishes."
+            },
+            {
+                name: "Pothos",
+                category: "fern",
+                image: "https://images.unsplash.com/photo-1598618443855-232ee0f819f6?w=600&h=600&fit=crop",
+                description: "Pothos is a popular trailing houseplant with heart-shaped leaves. It's extremely easy to care for and is excellent for purifying indoor air."
+            },
+            {
+                name: "Daisy",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1518621012428-4ae236c35dc8?w=600&h=600&fit=crop",
+                description: "Daisies are cheerful, simple flowers with white petals and yellow centers. They symbolize innocence and purity, and are perfect for beginner gardeners."
+            },
+            {
+                name: "Peony",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1518621012428-4ae236c35dc8?w=600&h=600&fit=crop",
+                description: "Peonies are stunning flowering plants with large, fragrant blooms in shades of pink, white, and red. They're long-lived perennials that bloom in late spring."
+            },
+            {
+                name: "Marigold",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1518621012428-4ae236c35dc8?w=600&h=600&fit=crop",
+                description: "Marigolds are vibrant, easy-to-grow flowers that come in shades of yellow, orange, and red. They're known for repelling pests and blooming all summer."
+            },
+            {
+                name: "Hibiscus",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1518621012428-4ae236c35dc8?w=600&h=600&fit=crop",
+                description: "Hibiscus plants produce large, colorful trumpet-shaped flowers. They're tropical plants that can be grown as annuals or perennials depending on climate."
+            },
+            {
+                name: "Cherry Blossom",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1518621012428-4ae236c35dc8?w=600&h=600&fit=crop",
+                description: "Cherry blossom trees are celebrated for their spectacular spring blooms of pink and white flowers. They're a symbol of beauty and renewal in many cultures."
+            },
+            {
+                name: "Cactus",
+                category: "succulent",
+                image: "https://images.unsplash.com/photo-1587049633312-d628ae50a8ae?w=600&h=600&fit=crop",
+                description: "Cacti are spiny succulents adapted to dry environments. They come in various shapes and sizes, from small round cacti to tall columnar varieties."
+            },
+            {
+                name: "Haworthia",
+                category: "succulent",
+                image: "https://images.unsplash.com/photo-1587049633312-d628ae50a8ae?w=600&h=600&fit=crop",
+                description: "Haworthia are small, rosette-forming succulents with distinctive white stripes. They're perfect for windowsills and require minimal care."
+            },
+            {
+                name: "Burro's Tail",
+                category: "succulent",
+                image: "https://images.unsplash.com/photo-1587049633312-d628ae50a8ae?w=600&h=600&fit=crop",
+                description: "Burro's Tail is a trailing succulent with plump, bead-like leaves that cascade beautifully. It's ideal for hanging baskets and bright indoor spaces."
+            },
+            {
+                name: "Palm Tree",
+                category: "tree",
+                image: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=600&h=600&fit=crop",
+                description: "Palm trees are iconic tropical trees with large, fan-shaped or feather-like fronds. They add a tropical feel to landscapes and gardens."
+            },
+            {
+                name: "Birch Tree",
+                category: "tree",
+                image: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=600&h=600&fit=crop",
+                description: "Birch trees are known for their distinctive white, peeling bark and delicate leaves. They're fast-growing and provide beautiful fall color."
+            },
+            {
+                name: "Willow Tree",
+                category: "tree",
+                image: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=600&h=600&fit=crop",
+                description: "Willow trees have graceful, drooping branches and narrow leaves. They're often found near water and are known for their peaceful, serene appearance."
+            },
+            {
+                name: "Cilantro",
+                category: "herb",
+                image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=600&h=600&fit=crop",
+                description: "Cilantro is a fast-growing herb with flat, serrated leaves. It's essential in Mexican and Asian cuisines and has a fresh, citrusy flavor."
+            },
+            {
+                name: "Parsley",
+                category: "herb",
+                image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=600&h=600&fit=crop",
+                description: "Parsley is a versatile herb with curly or flat leaves. It's rich in vitamins and is commonly used as a garnish and flavor enhancer in cooking."
+            },
+            {
+                name: "Sage",
+                category: "herb",
+                image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=600&h=600&fit=crop",
+                description: "Sage is an aromatic herb with soft, gray-green leaves. It has a strong, earthy flavor and is commonly used in stuffings and savory dishes."
+            },
+            {
+                name: "Oregano",
+                category: "herb",
+                image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=600&h=600&fit=crop",
+                description: "Oregano is a perennial herb with small, oval leaves. It's a staple in Mediterranean cooking, especially Italian and Greek cuisines."
+            },
+            {
+                name: "Tree Fern",
+                category: "fern",
+                image: "https://images.unsplash.com/photo-1597848212624-e59336e7b757?w=600&h=600&fit=crop",
+                description: "Tree ferns are large, prehistoric-looking ferns with tall, trunk-like stems and large, spreading fronds. They create a dramatic, tropical appearance."
+            },
+            {
+                name: "Bird's Nest Fern",
+                category: "fern",
+                image: "https://images.unsplash.com/photo-1597848212624-e59336e7b757?w=600&h=600&fit=crop",
+                description: "Bird's Nest Ferns have broad, wavy fronds that emerge from a central rosette. They're excellent houseplants that thrive in low to medium light."
+            },
+            {
+                name: "Orange Tree",
+                category: "fruit",
+                image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&h=600&fit=crop",
+                description: "Orange trees produce fragrant white flowers and delicious, vitamin C-rich fruits. They can be grown in warm climates or as container plants."
+            },
+            {
+                name: "Peach Tree",
+                category: "fruit",
+                image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&h=600&fit=crop",
+                description: "Peach trees bear beautiful pink blossoms in spring and sweet, juicy fruits in summer. They require adequate sunlight and well-drained soil."
+            },
+            {
+                name: "Mango Tree",
+                category: "fruit",
+                image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&h=600&fit=crop",
+                description: "Mango trees are tropical fruit trees that produce sweet, aromatic fruits. They have glossy, dark green leaves and can grow quite large."
+            },
+            {
+                name: "Dahlia",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1518621012428-4ae236c35dc8?w=600&h=600&fit=crop",
+                description: "Dahlias are showy flowers with intricate, multi-layered petals in vibrant colors. They bloom from midsummer until frost and make excellent cut flowers."
+            },
+            {
+                name: "Iris",
+                category: "flowering",
+                image: "https://images.unsplash.com/photo-1518621012428-4ae236c35dc8?w=600&h=600&fit=crop",
+                description: "Irises are elegant perennials with distinctive, sword-like leaves and beautiful, often fragrant flowers in a wide range of colors."
+            },
+            {
+                name: "Monstera",
+                category: "fern",
+                image: "https://images.unsplash.com/photo-1597848212624-e59336e7b757?w=600&h=600&fit=crop",
+                description: "Monstera, also known as Swiss Cheese Plant, has large, glossy leaves with unique holes. It's a popular, low-maintenance houseplant that adds tropical flair."
+            },
+            {
+                name: "Rubber Plant",
+                category: "tree",
+                image: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=600&h=600&fit=crop",
+                description: "Rubber Plants are popular houseplants with large, glossy, dark green leaves. They're easy to care for and can grow quite tall indoors."
+            }
+        ];
+
+        const plantsGrid = document.getElementById('plantsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const modal = document.getElementById('plantModal');
+        const closeModal = document.querySelector('.close');
+        const noResults = document.getElementById('noResults');
+
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // Render plants
+        function renderPlants() {
+            plantsGrid.innerHTML = '';
+            noResults.classList.remove('show');
+
+            const filtered = plants.filter(plant => {
+                const matchesCategory = currentCategory === 'all' || plant.category === currentCategory;
+                const matchesSearch = plant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    plant.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    plant.category.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.add('show');
+                return;
+            }
+
+            filtered.forEach(plant => {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                card.innerHTML = `
+                    <img src="${plant.image}" alt="${plant.name}" class="plant-image" loading="lazy">
+                    <div class="plant-info">
+                        <div class="plant-name">${plant.name}</div>
+                        <span class="plant-category">${plant.category}</span>
+                        <p class="plant-description">${plant.description.substring(0, 100)}...</p>
+                    </div>
+                `;
+                card.addEventListener('click', () => openModal(plant));
+                plantsGrid.appendChild(card);
+            });
+        }
+
+        // Filter by category
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                renderPlants();
+            });
+        });
+
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderPlants();
+        });
+
+        // Open modal
+        function openModal(plant) {
+            document.getElementById('modalImage').src = plant.image;
+            document.getElementById('modalName').textContent = plant.name;
+            document.getElementById('modalCategory').textContent = plant.category;
+            document.getElementById('modalDescription').textContent = plant.description;
+            modal.style.display = 'block';
+        }
+
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Initial render
+        renderPlants();
+    </script>
+</body>
+</html>
+
